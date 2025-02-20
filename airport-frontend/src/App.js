@@ -7,6 +7,46 @@ function App() {
   const [busResults, setBusResults] = useState(null);
 
 
+// Replace single loading state with a map of loading states per plane
+const [loadingStates, setLoadingStates] = useState({});
+
+const autoFillPlane = async (planeId) => {
+    setLoadingStates(prev => ({ ...prev, [planeId]: true }));
+    const plane = planes.find(p => p.id === planeId);
+    const currentPassengers = plane.families.reduce((acc, family) => acc + family.count, 0);
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/planes/autofill/${planeId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ currentPassengers }),
+        });
+        
+        const data = await response.json();
+        
+        setPlanes(prevPlanes =>
+            prevPlanes.map(plane => {
+                if (plane.id === planeId) {
+                    return { 
+                        ...plane, 
+                        families: [...plane.families, ...data.families]
+                    };
+                }
+                return plane;
+            })
+        );
+    } catch (error) {
+        console.error('Error auto-filling plane:', error);
+    } finally {
+        setLoadingStates(prev => ({ ...prev, [planeId]: false }));
+    }
+};
+
+
+
+
   const generateFamilyName = () => {
       const letters = 'abcdefghijklmnopqrstuvwxyz';
       return letters[Math.floor(Math.random() * 26)] + letters[Math.floor(Math.random() * 26)];
@@ -33,40 +73,6 @@ function App() {
       );
   };
 
-  const autoFillPlane = (planeId) => {
-      setPlanes(prevPlanes =>
-          prevPlanes.map(plane => {
-              if (plane.id === planeId) {
-                  let totalPassengers = plane.families.reduce((acc, family) => acc + family.count, 0);
-                  const newFamilies = [];
-                  const destinations = ["Kalush", "Kosiv", "Galych", "Kolomiya"];
-
-                  while (totalPassengers < 100) {
-                      let newCount = Math.floor(Math.random() * 4) + 1;
-                      if (totalPassengers + newCount > 100) {
-                          newCount = 100 - totalPassengers;
-                      }
-                      if (newCount === 0) break;
-
-                      const uniqueId = `family-${planeId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                      const randomDestination = destinations[Math.floor(Math.random() * destinations.length)];
-                      const newFamily = {
-                          id: uniqueId,
-                          name: generateFamilyName(),
-                          travelTo: randomDestination,
-                          count: newCount,
-                          planeId: planeId,
-                      };
-
-                      newFamilies.push(newFamily);
-                      totalPassengers += newCount;
-                  }
-                  return { ...plane, families: [...plane.families, ...newFamilies] };
-              }
-              return plane;
-          })
-      );
-  };
 
   const createPlanes = () => {
       const destinations = ["London", "Paris", "New York", "Tokyo"];
@@ -78,57 +84,23 @@ function App() {
       setPlanes(newPlanes);
   };
 
-  const sortPassengersIntoBuses = () => {
-      // Initialize bus routes with arrays to hold multiple buses
-      let busRoutes = {
-          'Kalush': [],
-          'Kosiv': [],
-          'Galych': [],
-          'Kolomiya': []
-      };
+  const sortPassengersIntoBuses = async () => {
+    try {
+        const response = await fetch('http://localhost:8080/api/buses/distribute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ planes }),
+        });
+        
+        const data = await response.json();
+        setBusResults(data.buses);
+    } catch (error) {
+        console.error('Error distributing passengers:', error);
+    }
+};
 
-      // Create initial bus for each route
-      Object.keys(busRoutes).forEach(destination => {
-          busRoutes[destination].push({
-              destination,
-              capacity: 100,
-              currentCapacity: 0,
-              passengers: []
-          });
-      });
-
-      planes.forEach(plane => {
-          plane.families.forEach(family => {
-              const route = busRoutes[family.travelTo];
-              let currentBus = route[route.length - 1];
-
-              // If current bus is full, create a new one
-              if (currentBus.currentCapacity + family.count > currentBus.capacity) {
-                  currentBus = {
-                      destination: family.travelTo,
-                      capacity: 100,
-                      currentCapacity: 0,
-                      passengers: []
-                  };
-                  route.push(currentBus);
-              }
-
-              currentBus.passengers.push({
-                  name: family.name,
-                  count: family.count,
-                  fromCity: plane.destination
-              });
-              currentBus.currentCapacity += family.count;
-          });
-      });
-
-      // Flatten all buses into a single array for display
-      const allBuses = Object.values(busRoutes)
-          .flat()
-          .filter(bus => bus.currentCapacity > 0);
-
-      setBusResults(allBuses);
-  };
 
 
 
@@ -171,69 +143,14 @@ function App() {
                                           Add Family
                                       </button>
                                       <button 
-                                          onClick={() => autoFillPlane(plane.id)}
-                                          disabled={totalPassengers >= 100}
-                                      >
-                                          Auto Fill Plane
-                                      </button>
+                                            onClick={() => autoFillPlane(plane.id)}
+                                            disabled={totalPassengers >= 100 || loadingStates[plane.id]}
+                                        >
+                                            {loadingStates[plane.id] ? 'Filling...' : 'Auto Fill Plane'}
+                                        </button>
                                   </div>
                                   <p>Total Passengers: {totalPassengers}</p>
-                                  <div className="families-list">
-                                      {plane.families.map((family) => (
-                                          <div key={family.id} className="family-item">
-                                              <span>Family {family.name}</span>
-                                              <select 
-                                                  value={family.travelTo}
-                                                  onChange={(e) => {
-                                                      setPlanes(currentPlanes =>
-                                                          currentPlanes.map(p => {
-                                                              if (p.id === family.planeId) {
-                                                                  return {
-                                                                      ...p,
-                                                                      families: p.families.map(f =>
-                                                                          f.id === family.id ? { ...f, travelTo: e.target.value } : f
-                                                                      ),
-                                                                  };
-                                                              }
-                                                              return p;
-                                                          })
-                                                      );
-                                                  }}
-                                              >
-                                                  <option value="Kalush">Kalush</option>
-                                                  <option value="Kosiv">Kosiv</option>
-                                                  <option value="Galych">Galych</option>
-                                                  <option value="Kolomiya">Kolomiya</option>
-                                              </select>
-                                              <input 
-                                                  type="number"
-                                                  min="1"
-                                                  max="4"
-                                                  value={family.count}
-                                                  onChange={(e) => {
-                                                      const newCount = parseInt(e.target.value) || 0;
-                                                      setPlanes(currentPlanes =>
-                                                          currentPlanes.map(p => {
-                                                              if (p.id === family.planeId) {
-                                                                  const otherPassengers = p.families.reduce((acc, f) => 
-                                                                      f.id === family.id ? acc : acc + f.count, 0);
-                                                                  const available = 100 - otherPassengers;
-                                                                  const finalCount = newCount > available ? available : newCount;
-                                                                  return {
-                                                                      ...p,
-                                                                      families: p.families.map(f =>
-                                                                          f.id === family.id ? { ...f, count: finalCount } : f
-                                                                      ),
-                                                                  };
-                                                              }
-                                                              return p;
-                                                          })
-                                                      );
-                                                  }}
-                                              />
-                                          </div>
-                                      ))}
-                                  </div>
+                                  {/* Rest of your plane card content */}
                               </div>
                           );
                       })}
@@ -243,12 +160,8 @@ function App() {
                       plane.destination
                   ) && (
                       <div className="sort-button-container">
-                          <button 
-                              className="sort-button"
-                              onClick={sortPassengersIntoBuses}
-                          >
-                              Sort Passengers into Buses
-                          </button>
+                          <button className="sort-button"
+                            onClick={sortPassengersIntoBuses}>Sort Passengers into Buses</button>
                       </div>
                   )}
                       {busResults && (
