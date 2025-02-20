@@ -1,0 +1,3 @@
+aa Kalush 2
+ab Kosiv 3
+ac Galych 1
