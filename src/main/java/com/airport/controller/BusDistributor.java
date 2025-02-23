@@ -32,7 +32,7 @@ public class BusDistributor {
             Bus currentBus = new Bus(destination);
             
             for (Family family : families) {
-                if (currentBus.getCurrentCapacity() + family.getCount() > 50) {
+                if (currentBus.getCurrentCapacity() + family.getCount() > Bus.MAX_CAPACITY) { 
                     buses.add(currentBus);
                     currentBus = new Bus(destination);
                 }

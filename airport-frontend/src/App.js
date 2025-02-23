@@ -25,13 +25,16 @@ const autoFillPlane = async (planeId) => {
         });
         
         const data = await response.json();
-        
+        const familiesWithUniqueIds = data.families.map(family => ({
+            ...family,
+            id: `family-${planeId}-${family.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        }));
         setPlanes(prevPlanes =>
             prevPlanes.map(plane => {
                 if (plane.id === planeId) {
                     return { 
                         ...plane, 
-                        families: [...plane.families, ...data.families]
+                        families: [...plane.families, ...familiesWithUniqueIds]
                     };
                 }
                 return plane;
@@ -43,36 +46,6 @@ const autoFillPlane = async (planeId) => {
         setLoadingStates(prev => ({ ...prev, [planeId]: false }));
     }
 };
-
-
-
-
-  const generateFamilyName = () => {
-      const letters = 'abcdefghijklmnopqrstuvwxyz';
-      return letters[Math.floor(Math.random() * 26)] + letters[Math.floor(Math.random() * 26)];
-  };
-
-  const addFamily = (planeId) => {
-      setPlanes(prevPlanes =>
-          prevPlanes.map(plane => {
-              if (plane.id === planeId) {
-                  const totalPassengers = plane.families.reduce((acc, family) => acc + family.count, 0);
-                  if (totalPassengers >= 100) return plane;
-                  const uniqueId = `family-${planeId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                  const newFamily = {
-                      id: uniqueId,
-                      name: generateFamilyName(),
-                      travelTo: "Kalush",
-                      count: 1,
-                      planeId: planeId,
-                  };
-                  return { ...plane, families: [...plane.families, newFamily] };
-              }
-              return plane;
-          })
-      );
-  };
-
 
   const createPlanes = () => {
       const destinations = ["London", "Paris", "New York", "Tokyo"];
@@ -100,10 +73,6 @@ const autoFillPlane = async (planeId) => {
         console.error('Error distributing passengers:', error);
     }
 };
-
-
-
-
 
   return (
       <div className="App">
@@ -137,20 +106,38 @@ const autoFillPlane = async (planeId) => {
                                   </div>
                                   <div className="plane-buttons">
                                       <button 
-                                          onClick={() => addFamily(plane.id)}
-                                          disabled={totalPassengers >= 100}
-                                      >
-                                          Add Family
-                                      </button>
-                                      <button 
                                             onClick={() => autoFillPlane(plane.id)}
                                             disabled={totalPassengers >= 100 || loadingStates[plane.id]}
                                         >
-                                            {loadingStates[plane.id] ? 'Filling...' : 'Auto Fill Plane'}
+                                            {loadingStates[plane.id] ? 'Filling...' : 'Fill Plane'}
                                         </button>
                                   </div>
                                   <p>Total Passengers: {totalPassengers}</p>
                                   {/* Rest of your plane card content */}
+                                  <div className="families-table-container">
+                                        <table className="families-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Family Name</th>
+                                                    <th>Members</th>
+                                                    <th>Destination</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                        <div className="families-table-body">
+                                            <table className="families-table">
+                                                <tbody>
+                                                    {plane.families.map((family, index) => (
+                                                        <tr key={`family-${index}-${family.id}`}>
+                                                            <td>{family.name}</td>
+                                                            <td>{family.count}</td>
+                                                            <td>{family.travelTo}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                               </div>
                           );
                       })}
@@ -169,7 +156,7 @@ const autoFillPlane = async (planeId) => {
                               <h2>Bus Distribution Results</h2>
                               <div className="bus-grid">
                                   {busResults.map((bus, index) => (
-                                      <div key={index} className="bus-card">
+                                      <div key={`bus-${index}-${bus.destination}`} className="bus-card">
                                           <div className="bus-header">
                                               <h3>Bus to {bus.destination}</h3>
                                               <span className="passenger-count">
@@ -177,8 +164,8 @@ const autoFillPlane = async (planeId) => {
                                               </span>
                                           </div>
                                           <div className="passenger-list">
-                                              {bus.passengers.map((family, fIndex) => (
-                                                  <div key={fIndex} className="passenger-item">
+                                              {bus.passengers.map((family) => (
+                                                  <div key={`family-${family.name}-${family.planeId}`} className="passenger-item">
                                                       <span className="family-name">Family {family.name}</span>
                                                       <span className="member-count">{family.count} members</span>
                                                       <span className="from-city">From: {family.fromCity}</span>

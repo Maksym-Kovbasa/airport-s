@@ -1,18 +1,18 @@
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\config\WebConfig.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\controller\PlaneController.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\controller\SortController.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\Bus.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\Family.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\config\CorsFilterConfig.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\PlaneData.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\View.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\config\SecurityConfig.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\service\SimulationService.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\Controller.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\Plane.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\AirportApplication.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\controller\BusController.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\controller\BusDistributor.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\model\Model.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\AirportSimulationApplication.java
-D:\Instal\Нова папка\airport-s-main\airport-s-main\src\main\java\com\airport\controller\SimulationController.java
+D:\practic\airport-simulation\src\main\java\com\airport\controller\BusDistributor.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\View.java
+D:\practic\airport-simulation\src\main\java\com\airport\controller\SimulationController.java
+D:\practic\airport-simulation\src\main\java\com\airport\controller\PlaneController.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\Model.java
+D:\practic\airport-simulation\src\main\java\com\airport\controller\BusController.java
+D:\practic\airport-simulation\src\main\java\com\airport\config\CorsFilterConfig.java
+D:\practic\airport-simulation\src\main\java\com\airport\config\SecurityConfig.java
+D:\practic\airport-simulation\src\main\java\com\airport\config\WebConfig.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\Controller.java
+D:\practic\airport-simulation\src\main\java\com\airport\controller\SortController.java
+D:\practic\airport-simulation\src\main\java\com\airport\AirportApplication.java
+D:\practic\airport-simulation\src\main\java\com\airport\service\SimulationService.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\Plane.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\Bus.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\PlaneData.java
+D:\practic\airport-simulation\src\main\java\com\airport\AirportSimulationApplication.java
+D:\practic\airport-simulation\src\main\java\com\airport\model\Family.java

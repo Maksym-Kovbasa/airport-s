@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bus {
+    public static final int MAX_CAPACITY = 38;
     private String destination;
     List<Family> passengers;
     private int currentCapacity;
@@ -23,8 +24,13 @@ public class Bus {
     }
 
     public void addFamily(Family family) {
-        passengers.add(family);
-        currentCapacity += family.getCount();
+        if (canAddFamily(family)) {
+            passengers.add(family);
+            currentCapacity += family.getCount();
+        }
+    }
+    public boolean canAddFamily(Family family) {
+        return currentCapacity + family.getCount() <= MAX_CAPACITY;
     }
 
     public String getDestination() {
