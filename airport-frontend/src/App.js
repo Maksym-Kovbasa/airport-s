@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import './App.css';
+import HistoryModal from './components/HistoryModal';
 
 function App() {
   const [planes, setPlanes] = useState([]);
   const [numberOfPlanes, setNumberOfPlanes] = useState(1);
   const [busResults, setBusResults] = useState(null);
-
-
-// Replace single loading state with a map of loading states per plane
-const [loadingStates, setLoadingStates] = useState({});
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [loadingStates, setLoadingStates] = useState({});
 
 const autoFillPlane = async (planeId) => {
     setLoadingStates(prev => ({ ...prev, [planeId]: true }));
@@ -69,6 +69,14 @@ const autoFillPlane = async (planeId) => {
         
         const data = await response.json();
         setBusResults(data.buses);
+
+        // Add to history
+        const historyEntry = {
+            timestamp: new Date().toLocaleString(),
+            planes: [...planes],
+            buses: data.buses
+        };
+        setHistory(prev => [...prev, historyEntry]);
     } catch (error) {
         console.error('Error distributing passengers:', error);
     }
@@ -81,6 +89,7 @@ const autoFillPlane = async (planeId) => {
           </header>
           <main className="App-main">
               <div className="control-panel">
+                <div className="setup-section">
                   <div className="plane-setup">
                       <label>
                           Number of Planes:
@@ -94,6 +103,11 @@ const autoFillPlane = async (planeId) => {
                       </label>
                       <button onClick={createPlanes}>Create Planes</button>
                   </div>
+                  <div className="history-section">
+                        <button className="history-button" onClick={() => setShowHistory(true)}>Show History</button>
+                        {showHistory && (<HistoryModal history={history} onClose={() => setShowHistory(false)}/>)}
+                  </div>
+                </div>
                   <div className="planes-container">
                       {planes.map((plane) => {
                           const totalPassengers = plane.families.reduce((acc, family) => acc + family.count, 0);
