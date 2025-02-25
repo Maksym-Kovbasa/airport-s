@@ -18,16 +18,24 @@ const MovingPlane = ({ from, to, name }) => {
         const calculateBearing = (startLat, startLng, destLat, destLng) => {
             const toRad = n => n * Math.PI / 180;
             const toDeg = n => n * 180 / Math.PI;
+            let dLong = destLng - startLng;
+            if (dLong > 180) {
+                dLong -= 360;
+            } else if (dLong < -180) {
+                dLong += 360;
+            }
+            dLong = toRad(dLong);
 
-            const dLong = toRad(destLng - startLng);
             const startLat_rad = toRad(startLat);
             const destLat_rad = toRad(destLat);
+
 
             const y = Math.sin(dLong) * Math.cos(destLat_rad);
             const x = Math.cos(startLat_rad) * Math.sin(destLat_rad) -
                 Math.sin(startLat_rad) * Math.cos(destLat_rad) * Math.cos(dLong);
 
-            return ((toDeg(Math.atan2(y, x)) + 360) % 360) - 45; // Adjust for initial 45° right-up orientation
+
+            return ((toDeg(Math.atan2(y, x)) + 360) % 360) - 45; // Adjust for initial orientation
         };
 
         const initialBearing = calculateBearing(from[0], from[1], to[0], to[1]);
@@ -50,6 +58,8 @@ const MovingPlane = ({ from, to, name }) => {
             const duration = 5000;
             let startTime = null;
 
+            let previousPosition = from;
+
             function move(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const progress = (timestamp - startTime) / duration;
@@ -57,7 +67,11 @@ const MovingPlane = ({ from, to, name }) => {
                 if (progress < 1) {
                     const lat = from[0] + (to[0] - from[0]) * progress;
                     const lng = from[1] + (to[1] - from[1]) * progress;
-                    const currentBearing = calculateBearing(lat, lng, to[0], to[1]);
+
+                    // Обчислюємо кут між попередньою та поточною позиціями
+                    const currentBearing = calculateBearing(previousPosition[0], previousPosition[1], lat, lng);
+                    previousPosition = [lat, lng];
+
                     marker.setLatLng([lat, lng]);
                     marker.setIcon(updatePlaneIcon(lat, lng, currentBearing));
                     requestAnimationFrame(move);
@@ -128,12 +142,18 @@ const AirportMap = ({ airports }) => {
                             <h3>{airport.name}</h3>
                             <p><strong>Code:</strong> {airport.code}</p>
                             <p><strong>Location:</strong> {airport.city}, {airport.country}</p>
+                            <p><strong>Position:</strong> {Number(airport.latitude).toFixed(4)}°N, {Number(airport.longitude).toFixed(4)}°E</p>
                         </div>
                     </Popup>
                 </Marker>
             ))}
             <Marker position={LVIV} icon={redIcon}>
-                <Popup>Lviv International Airport</Popup>
+                <Popup>
+                    <div className="airport-popup">
+                        <h3>Lviv International Airport</h3>
+                        <p><strong>Position:</strong> {LVIV[0].toFixed(4)}°N, {LVIV[1].toFixed(4)}°E</p>
+                    </div>
+                </Popup>
             </Marker>
         </MapContainer>
     );

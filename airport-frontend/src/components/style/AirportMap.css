@@ -21,6 +21,6 @@
 }
 
 @keyframes moveToLviv {
-    0% { transform: translate(0, 0) rotate(45deg); }
-    100% { transform: translate(100px, -100px) rotate(45deg); }
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(100px, -100px); }
 }
