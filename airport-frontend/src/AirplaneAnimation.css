@@ -1,0 +1,47 @@
+.airplane-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.airplane {
+    position: absolute;
+    font-size: 100px;
+    opacity: 1;
+    animation: flyInCircle 2s linear forwards, disappear 0.5s 2s forwards;
+}
+
+@keyframes flyInCircle {
+    0% {
+        transform: rotate(0deg) translate(150px) rotate(180deg);
+    }
+    25% {
+        transform: rotate(90deg) translate(150px) rotate(180deg);
+    }
+    50% {
+        transform: rotate(180deg) translate(150px) rotate(180deg);
+    }
+    75% {
+        transform: rotate(270deg) translate(150px) rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg) translate(150px) rotate(180deg);
+    }
+}
+@keyframes disappear {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        display: none;
+    }
+}
+

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './App.css';
 import HistoryModal from './components/HistoryModal';
+import AirplaneAnimation from "./AirplaneAnimation";
+import BusAnimation from "./BusAnimation"; 
 
 function App() {
   const [planes, setPlanes] = useState([]);
@@ -9,6 +11,9 @@ function App() {
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [loadingStates, setLoadingStates] = useState({});
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [showBusAnimation, setShowBusAnimation] = useState(false);
+  const [isAutoFilled, setIsAutoFilled] = useState(false);
 
 const autoFillPlane = async (planeId) => {
     setLoadingStates(prev => ({ ...prev, [planeId]: true }));
@@ -45,6 +50,11 @@ const autoFillPlane = async (planeId) => {
     } finally {
         setLoadingStates(prev => ({ ...prev, [planeId]: false }));
     }
+    setShowAnimation(true);
+        setIsAutoFilled(true);
+        setTimeout(() => {
+            setShowAnimation(false);
+        }, 10000);
 };
 
   const createPlanes = () => {
@@ -58,6 +68,9 @@ const autoFillPlane = async (planeId) => {
   };
 
   const sortPassengersIntoBuses = async () => {
+    setTimeout(() => {
+        scrollToBusDistribution();
+    }, 100);
     try {
         const response = await fetch('http://localhost:8080/api/buses/distribute', {
             method: 'POST',
@@ -80,7 +93,27 @@ const autoFillPlane = async (planeId) => {
     } catch (error) {
         console.error('Error distributing passengers:', error);
     }
+        setShowBusAnimation(true);
+        setIsAutoFilled(false);
+        setTimeout(() => {
+            setShowBusAnimation(false);
+        }, 10000);
 };
+
+const busDistributionRef = useRef(null);
+    
+    const scrollToBusDistribution = () => {
+        if (busDistributionRef.current) {
+            const offset = 50;
+            const elementPosition = busDistributionRef.current.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+    
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
 
   return (
       <div className="App">
@@ -160,9 +193,12 @@ const autoFillPlane = async (planeId) => {
                       plane.families.reduce((acc, family) => acc + family.count, 0) === 100 && 
                       plane.destination
                   ) && (
-                      <div className="sort-button-container">
+                      <div ref={busDistributionRef} className="sort-button-container">
+                        {showBusAnimation && showBusAnimation && (<div className="sort-button-container"> <BusAnimation onAnimationEnd={() => setShowBusAnimation(false)} /> </div>)}
                           <button className="sort-button"
-                            onClick={sortPassengersIntoBuses}>Sort Passengers into Buses</button>
+                            onClick={sortPassengersIntoBuses}>Sort Passengers into Buses
+                          </button>
+                            {showBusAnimation && showBusAnimation && (<div className="sort-button-container"><BusAnimation onAnimationEnd={() => setShowBusAnimation(false)} /></div>)}
                       </div>
                   )}
                       {busResults && (
@@ -191,9 +227,10 @@ const autoFillPlane = async (planeId) => {
                               </div>
                           </div>
                       )}
-                                    </div>
-                                </main>
-                            </div>
+                </div>
+            {showAnimation && <AirplaneAnimation onAnimationEnd={() => setShowAnimation(false)} />}
+        </main>
+    </div>
   );
 }
 export default App;
