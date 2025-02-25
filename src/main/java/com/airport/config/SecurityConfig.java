@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.Arrays;
-import org.springframework.security.config.Customizer;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -27,8 +26,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return config;
         }))
         .authorizeHttpRequests(auth -> auth
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .antMatchers("/api/sort-passengers").authenticated()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers("/api/sort-passengers").authenticated()
             .anyRequest().permitAll()
         )
         .httpBasic(withDefaults()) // Увімкнути Basic Auth

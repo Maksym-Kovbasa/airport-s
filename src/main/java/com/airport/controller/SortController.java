@@ -2,13 +2,10 @@ package com.airport.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.airport.model.Bus;
 import com.airport.model.PlaneData;
-
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController

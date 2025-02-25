@@ -20,9 +20,19 @@ To start the Spring Boot server:
 ```bash
 mvn spring-boot:run
 ```
-# Available Scripts
-Backend
-```mvn spring-boot:run ```- Runs the Spring Boot application
-Frontend
-```cd airport-frontend``` - Navigate to the frontend directory
-```npm start``` - Runs the app in development mode
+
+## Frontend
+- Navigate to the frontend directory
+```bash
+cd airport-frontend
+``` 
+
+- Promise based HTTP client for the browser
+```bash
+npm install axios
+```
+
+- React-scripts start is the proper command to run the React app in dev mode
+```bash
+npm start
+```

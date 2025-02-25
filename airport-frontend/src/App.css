@@ -2,7 +2,7 @@
   text-align: center;
   padding: 20px;
   min-width: 500px;
-  
+
 }
 
 .App-header {
@@ -16,15 +16,33 @@
 .App-main {
   max-width: 1200px;
   margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.dashboard-toggle {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 10px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.dashboard-toggle:hover {
+  background-color: #007bff;
 }
 
 .control-panel {
   background: #f5f5f5;
   padding: 20px;
   border-radius: 8px;
+  margin-bottom: 20px;
 }
+
 .setup-section {
-  padding: 20px;
   justify-content: center;
   align-items: center;
   display: flex;
@@ -32,7 +50,7 @@
 }
 
 .plane-setup {
-  display:contents;
+  display: contents;
   padding: 20px;
 }
 
@@ -41,13 +59,17 @@
   padding: 5px;
 }
 
-.plane-setup button {
+.CreatePlane {
   padding: 8px 16px;
-  background: #007bff;
+  background: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.CreatePlane:hover {
+  background: #007bff;
 }
 
 .planes-container {
@@ -61,7 +83,7 @@
   background: white;
   padding: 12px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-width: auto;
 }
 
@@ -84,7 +106,7 @@
   margin: 8px 0;
 }
 
-.plane-buttons button {
+.fill-plane-button {
   padding: 4px 8px;
   background: #28a745;
   color: white;
@@ -94,52 +116,53 @@
   font-size: 0.9em;
 }
 
+.fill-plane-button:hover {
+  background: #007bff;
+}
+
 .families-table-container {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .families-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9em;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
 }
 
 .families-table-body {
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid #eee;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #eee;
 }
 
 .families-table th,
 .families-table td {
-    padding: 4px 6px;
-    text-align: left;
-    min-width: 80px;
+  padding: 4px 6px;
+  text-align: left;
+  min-width: 80px;
 }
 
 .families-table th {
-    background-color: #f0f0f0;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+  background-color: #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .families-table-body::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 .families-table-body::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 3px;
+  background-color: #888;
+  border-radius: 3px;
 }
 
 .families-table-body::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
-.plane-buttons button:hover {
-  background: #218838;
-}
 
 .families-list {
   display: grid;
@@ -169,51 +192,48 @@
 }
 
 .sort-button-container {
-    margin: 20px 0;
-    text-align: center;
+  margin: 20px 0;
+  text-align: center;
 }
-
-.sort-button {
-    padding: 12px 24px;
-    font-size: 1.2em;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 .sort-button:hover {
-    background-color: #45a049;
+  background-color: #007bff;
 }
-
+.sort-button {
+  padding: 12px 24px;
+  font-size: 1.2em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 .bus-results {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border-radius: 4px;
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .bus-card {
-    background: white;
-    margin: 10px 0;
-    padding: 15px;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: white;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .bus-families {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 4px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 
 .departure-point {
-    font-weight: bold;
-    margin-left: 10px;
-    color: #2c3e50;
+  font-weight: bold;
+  margin-left: 10px;
+  color: #2c3e50;
 }
 
 .bus-distribution {
@@ -221,7 +241,7 @@
   background: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .bus-grid {
@@ -248,7 +268,7 @@
 }
 
 .passenger-count {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   padding: 5px 10px;
   border-radius: 15px;
 }
@@ -288,27 +308,27 @@
 }
 
 .families-table {
-    width: 100%;
-    margin-top: 15px;
-    border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .families-table th,
 .families-table td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 .families-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
+  background-color: #f4f4f4;
+  font-weight: bold;
 }
 
 .families-table tr:hover {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 .history-section {
@@ -326,6 +346,10 @@
 
 }
 
+.history-button:hover {
+  background-color: #007bff;
+}
+
 
 .history-details {
   display: grid;
@@ -333,7 +357,8 @@
   gap: 1rem;
 }
 
-.history-plane, .history-bus {
+.history-plane,
+.history-bus {
   padding: 0.5rem;
   background-color: #f8f9fa;
   border-radius: 4px;
@@ -378,4 +403,164 @@
 .modal-close:hover {
   background-color: #f0f0f0;
   border-radius: 50%;
+}
+
+.app {
+  padding: 20px;
+}
+
+.app-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+.section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h3 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit {
+  background-color: #28a745;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 15px;
+}
+
+td {
+  padding: 12px 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.history-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 80%;
+  max-width: 800px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 15px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

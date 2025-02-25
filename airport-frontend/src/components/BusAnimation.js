@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './BusAnimation.css';
+import 'airport-frontend/src/components/style/BusAnimation.css';
 
 const BusAnimation = ({ onAnimationEnd }) => {
     const busRef = useRef(null);
