@@ -1,0 +1,26 @@
+.flight-icon {
+    animation: pulse 1s infinite;
+}
+
+.plane-icon {
+    transform-origin: center center;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.moving-plane {
+    animation: moveToLviv 10s infinite linear;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes moveToLviv {
+    0% { transform: translate(0, 0) rotate(45deg); }
+    100% { transform: translate(100px, -100px) rotate(45deg); }
+}

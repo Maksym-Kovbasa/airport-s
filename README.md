@@ -32,6 +32,8 @@ cd airport-frontend
 npm install axios
 ```
 
+npm install leaflet react-leaflet
+
 - React-scripts start is the proper command to run the React app in dev mode
 ```bash
 npm start

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { airportApi } from '../services/api';
 import AirportForm from './AirportForm';
+import AirportMap from './AirportMap';
 
 const AirportList = () => {
     const [airports, setAirports] = useState([]);
     const [editingAirport, setEditingAirport] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const [mapCenter, setMapCenter] = useState([50.4501, 30.5234]);
     useEffect(() => {
         loadAirports();
     }, []);
@@ -15,11 +16,21 @@ const AirportList = () => {
         try {
             setLoading(true);
             const response = await airportApi.getAllAirports();
-            setAirports(response.data);
+            const airportsWithCoordinates = response.data.map(airport => ({
+                ...airport,
+                latitude: Number(airport.latitude),
+                longitude: Number(airport.longitude)
+            }));
+            
+            console.log('Processed airports with coordinates:', airportsWithCoordinates);
+            setAirports(airportsWithCoordinates);
+        } catch (error) {
+            console.error('Error loading airports:', error);
         } finally {
             setLoading(false);
         }
     };
+    
 
     const handleUpdate = async (updatedAirport) => {
         try {
@@ -43,11 +54,14 @@ const AirportList = () => {
         <div className="section-container">
             <div className="section-header">  
             </div>
-            <AirportForm 
-                onAirportAdded={airport => setAirports([...airports, airport])}
-                editingAirport={editingAirport}
-                onUpdate={handleUpdate}
+            <div className='map'>
+            <AirportMap 
+                airports={airports}
+                center={mapCenter}
+                onAirportSelect={(airport) => setEditingAirport(airport)}
             />
+            </div>
+            
             {loading ? (
                 <div className="loading-skeleton">Loading...</div>
             ) : (
@@ -98,6 +112,11 @@ const AirportList = () => {
                     </table>
                 </div>
             )}
+            <AirportForm 
+                onAirportAdded={airport => setAirports([...airports, airport])}
+                editingAirport={editingAirport}
+                onUpdate={handleUpdate}
+            />
         </div>
     );
 };
