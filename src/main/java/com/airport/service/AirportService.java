@@ -28,14 +28,16 @@ public class AirportService {
         existingAirport.setCode(airport.getCode());
         existingAirport.setCity(airport.getCity());
         existingAirport.setCountry(airport.getCountry());
+        existingAirport.setLatitude(airport.getLatitude());
+        existingAirport.setLongitude(airport.getLongitude());
 
         return airportRepository.save(existingAirport);
     }
-    
+
     public void deleteAirport(Long id) {
         Airport airport = airportRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Airport not found"));
+                .orElseThrow(() -> new RuntimeException("Airport not found"));
         airportRepository.delete(airport);
     }
-}
 
+}

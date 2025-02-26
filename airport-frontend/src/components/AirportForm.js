@@ -12,33 +12,37 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
         latitude: null,
         longitude: null
     });
+    const [citySuggestions, setCitySuggestions] = useState([]);
 
-    const getCoordinates = async (city, country) => {
+    const getCitySuggestions = async (cityQuery) => {
         try {
             const response = await fetch(
-                `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(city)},${encodeURIComponent(country)}&key=${config.GEOCODING_API_KEY}`
+                `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(cityQuery)}&key=${config.GEOCODING_API_KEY}&limit=5&language=en`
             );
             const data = await response.json();
+            
+            const suggestions = data.results.map(result => ({
+                city: result.components.city || result.components.town || result.components.village,
+                country: result.components.country,
+                coords: result.geometry
+            })).filter(item => item.city);
 
-            if (data.results && data.results[0]) {
-                const { lat, lng } = data.results[0].geometry;
-                setFormData(prev => ({
-                    ...prev,
-                    latitude: Number(lat),
-                    longitude: Number(lng)
-                }));
-                console.log('Coordinates updated:', lat, lng);
-            }
+            setCitySuggestions(suggestions);
         } catch (error) {
-            console.log('Geocoding error:', error);
+            console.log('Suggestion fetch error:', error);
         }
     };
 
-    useEffect(() => {
-        if (formData.city && formData.country) {
-            getCoordinates(formData.city, formData.country);
-        }
-    }, [formData.city, formData.country]);
+    const handleCitySelect = (suggestion) => {
+        setFormData(prev => ({
+            ...prev,
+            city: suggestion.city,
+            country: suggestion.country,
+            latitude: suggestion.coords.lat,
+            longitude: suggestion.coords.lng
+        }));
+        setCitySuggestions([]);
+    };
 
     useEffect(() => {
         if (editingAirport) {
@@ -78,7 +82,7 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
                 <input
                     type="text"
                     name="name"
-                    placeholder="Airplane Name"
+                    placeholder="Airport Name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -86,27 +90,37 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
                 <input
                     type="text"
                     name="code"
-                    placeholder="Airport Code(name)"
+                    placeholder="Airport Code"
                     value={formData.code}
                     onChange={handleChange}
                     required
                 />
-                <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="country"
-                    placeholder="Country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    required
-                />
+                <div className="input-container">
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={(e) => {
+                            handleChange(e);
+                            getCitySuggestions(e.target.value);
+                        }}
+                        required
+                    />
+                    {citySuggestions.length > 0 && (
+                        <div className="suggestions-list">
+                            {citySuggestions.map((suggestion, index) => (
+                                <div 
+                                    key={index} 
+                                    className="suggestion-item"
+                                    onClick={() => handleCitySelect(suggestion)}
+                                >
+                                    {suggestion.city}, {suggestion.country}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
                 <div className="coordinates-display">
                     <p>Latitude: {formData.latitude} Longitude: {formData.longitude}</p>
                 </div>

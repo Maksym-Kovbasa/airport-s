@@ -8,34 +8,44 @@ import java.time.LocalDateTime;
 
 public class Flight {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
 
+    @Column(name = "flight_number")
     private String flightNumber;
 
-    @ManyToOne
-    private Airport departureAirport;
+    @Column(name = "departure_city")
+    private String departureCity;
 
-    @ManyToOne
-    private Airport arrivalAirport;
+    @Column(name = "arrival_city")
+    private String arrivalCity;
 
+    @Column(name = "departure_time")
     private LocalDateTime departureTime;
+
+    @Column(name = "arrival_time")
     private LocalDateTime arrivalTime;
 
-    public Long getId() {
-        return id;
+    @Column(name = "duration")
+    private int duration;
+
+    @Column(name = "cost")
+    private double cost;
+    private int flightDuration;
+    @ManyToOne
+    @JoinColumn(name = "arrival_airport_id")
+    private Airport arrivalAirport;
+
+    @ManyToOne
+    @JoinColumn(name = "departure_airport_id")
+    private Airport departureAirport;
+
+    public Airport getArrivalAirport() {
+        return arrivalAirport;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
+    public void setArrivalAirport(Airport arrivalAirport) {
+        this.arrivalAirport = arrivalAirport;
     }
 
     public Airport getDepartureAirport() {
@@ -46,12 +56,16 @@ public class Flight {
         this.departureAirport = departureAirport;
     }
 
-    public Airport getArrivalAirport() {
-        return arrivalAirport;
+    public String getId() {
+        return id;
     }
 
-    public void setArrivalAirport(Airport arrivalAirport) {
-        this.arrivalAirport = arrivalAirport;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
 
     public LocalDateTime getDepartureTime() {
@@ -70,4 +84,40 @@ public class Flight {
         this.arrivalTime = arrivalTime;
     }
 
+    public String getDepartureCity() {
+        return departureCity;
+    }
+
+    public String getArrivalCity() {
+        return arrivalCity;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public int getFlightDuration() {
+        return flightDuration;
+    }
+
+    // Setters
+    public void setDepartureCity(String departureCity) {
+        this.departureCity = departureCity;
+    }
+
+    public void setArrivalCity(String arrivalCity) {
+        this.arrivalCity = arrivalCity;
+    }
+
+    public void setFlightDuration(int flightDuration) {
+        this.flightDuration = flightDuration;
+    }
 }

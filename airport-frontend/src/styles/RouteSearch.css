@@ -1,0 +1,28 @@
+.route-search-container {
+    padding: 20px;
+}
+
+.search-panel {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.results-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+.route-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.map-container {
+    height: 600px;
+    border-radius: 8px;
+    overflow: hidden;
+}
