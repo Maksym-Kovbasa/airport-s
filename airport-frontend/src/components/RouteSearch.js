@@ -9,26 +9,6 @@ const RouteSearch = () => {
     const [endPoint, setEndPoint] = useState('');
     const [routes, setRoutes] = useState([]);
     const [loading, setLoading] = useState(false);
-    const getCoordinates = async (city) => {
-        try {
-            const response = await fetch(
-                `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(city)}&key=${config.GEOCODING_API_KEY}`
-            );
-            const data = await response.json();
-
-            if (data.results && data.results[0]) {
-                const { lat, lng } = data.results[0].geometry;
-                console.log(`Coordinates for ${city}: Latitude: ${lat}, Longitude: ${lng}`);
-                return {
-                    latitude: Number(lat),
-                    longitude: Number(lng)
-                };
-            }
-        } catch (error) {
-            console.log('Geocoding error:', error);
-        }
-        return null;
-    };
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const toRad = (degree) => degree * Math.PI / 180;
@@ -52,36 +32,56 @@ const RouteSearch = () => {
         // Define major hub regions
         const REGIONS = {
             OCEANIA: { minLat: -45, maxLat: -10, minLng: 110, maxLng: 155 },
-            EUROPE: { minLat: 35, maxLat: 60, minLng: -10, maxLng: 30 }
+            EUROPE: { minLat: 35, maxLat: 70, minLng: -10, maxLng: 40 },
+            AFRICA: { minLat: -35, maxLat: 35, minLng: -20, maxLng: 55 },
+            ASIA: { minLat: 10, maxLat: 60, minLng: 60, maxLng: 180 },
+            AMERICA: { minLat: -55, maxLat: 70, minLng: -170, maxLng: -30 }
         };
+        function filterByRegion(airports, region) {
+            return airports.filter(airport =>
+                airport.latitude > region.minLat &&
+                airport.latitude < region.maxLat &&
+                airport.longitude > region.minLng &&
+                airport.longitude < region.maxLng
+            );
+        }
 
-        // For Australia, prioritize major Australian airports
+        // Australia
         if (coords.lat < 0 && coords.lng > 110) {
-            const australianAirports = airports.filter(airport =>
-                airport.latitude < 0 &&
-                airport.longitude > 110 &&
-                airport.longitude < 155
-            );
-            if (australianAirports.length > 0) {
-                return findNearest(australianAirports);
-            }
+            const australianAirports = filterByRegion(airports, REGIONS.OCEANIA);
+            if (australianAirports.length) return findNearest(australianAirports);
         }
 
-        // For European destinations, prioritize major European airports
-        if (targetCoords && targetCoords.lng < 20 && targetCoords.lng > -10) {
-            const europeanAirports = airports.filter(airport =>
-                airport.latitude > 35 &&
-                airport.latitude < 60 &&
-                airport.longitude > -10 &&
-                airport.longitude < 30
-            );
-            if (europeanAirports.length > 0) {
-                return findNearest(europeanAirports);
-            }
+        // European
+        if (targetCoords && targetCoords.lng < 30 && targetCoords.lng > -10) {
+            const europeanAirports = filterByRegion(airports, REGIONS.EUROPE);
+            if (europeanAirports.length) return findNearest(europeanAirports);
         }
+        // AFRICA
+        if (coords.lat < 35 && coords.lat > -35 && coords.lng > -20 && coords.lng < 55) {
+            const africanAirports = filterByRegion(airports, REGIONS.AFRICA);
+            if (africanAirports.length) return findNearest(africanAirports);
+        }
+
+        // ASIA
+        if (coords.lat > 10 && coords.lat < 60 && coords.lng > 60 && coords.lng < 150) {
+            const asianAirports = filterByRegion(airports, REGIONS.ASIA);
+            if (asianAirports.length) return findNearest(asianAirports);
+        }
+
+        // AMERICA
+        if (coords.lat > -55 && coords.lat < 70 && coords.lng > -170 && coords.lng < -30) {
+            const americanAirports = filterByRegion(airports, REGIONS.AMERICA);
+            if (americanAirports.length) return findNearest(americanAirports);
+        }
+
 
         function findNearest(airportList) {
             return airportList.reduce((nearest, airport) => {
+                if (airport.latitude == null || airport.longitude == null) {
+                    console.warn("⚠️ Пропущений аеропорт або некоректні координати:", airport);
+                    return nearest; // Skip this airport
+                }
                 const distance = calculateDistance(
                     coords.lat,
                     coords.lng,
@@ -91,12 +91,15 @@ const RouteSearch = () => {
                 if (!nearest || distance < nearest.distance) {
                     return { airport, distance };
                 }
+
                 return nearest;
             }, null);
         }
 
         return findNearest(airports);
-    }; const [departureCoords, setDepartureCoords] = useState(null);
+    };
+
+    const [departureCoords, setDepartureCoords] = useState(null);
     const [destinationCoords, setDestinationCoords] = useState(null);
     const handleCitySelect = (suggestion, type) => {
         if (type === 'departure') {
@@ -122,14 +125,13 @@ const RouteSearch = () => {
 
     const findAlternativeRoute = async (coords, airports, excludedAirports = []) => {
         // Filter out already tried airports
-        const availableAirports = airports.filter(airport => 
+        const availableAirports = airports.filter(airport =>
             !excludedAirports.find(excluded => excluded.city === airport.city)
         );
 
         // Find next nearest airport
         return findNearestValidAirport(coords, availableAirports);
     };
-
     const searchRoutes = async () => {
         setLoading(true);
         try {
@@ -137,9 +139,10 @@ const RouteSearch = () => {
             const allAirports = airportsResponse.data;
             const triedDepartureAirports = [];
             const triedDestinationAirports = [];
-
-            let validRoute = false;
-            let nearestDeparture, nearestDestination;
+            if (!departureCoords || !destinationCoords) {
+                console.log('Missing coordinates');
+                return;
+            }
             const directDistance = calculateDistance(
                 departureCoords.lat,
                 departureCoords.lng,
@@ -147,7 +150,9 @@ const RouteSearch = () => {
                 destinationCoords.lng
             );
 
-            // If distance is less than 150km, create direct bus route
+
+            let validRoute = false;
+            let nearestDeparture, nearestDestination;
             if (directDistance <= 150) {
                 setRoutes([{
                     startPoint,
@@ -162,19 +167,103 @@ const RouteSearch = () => {
                 setLoading(false);
                 return;
             }
+            // Check for direct airport in cities
+            const departureAirport = allAirports.find(airport => {
+                const cityName = startPoint.split(',')[0].trim().toLowerCase();
+                return airport.city.toLowerCase() === cityName;
+            });
+            const destinationAirport = allAirports.find(airport => {
+                const cityName = endPoint.split(',')[0].trim().toLowerCase();
+                return airport.city.toLowerCase() === cityName;
+            });
+
 
             while (!validRoute) {
-                // Get nearest airports excluding previously tried ones
                 nearestDeparture = await findAlternativeRoute(departureCoords, allAirports, triedDepartureAirports);
                 nearestDestination = await findAlternativeRoute(destinationCoords, allAirports, triedDestinationAirports);
+                // Log the nearest departure airport
+                console.log(`Nearest Departure Airport: ${nearestDeparture ? nearestDeparture.airport.city : 'None found'}`);
 
+                // Log the nearest destination airport
+                console.log(`Nearest Destination Airport: ${nearestDestination ? nearestDestination.airport.city : 'None found'}`);
+
+                
+                const routeSegments = [];
+                // For bus segments, check for water bodies
+                if (!departureAirport && nearestDeparture) {
+                    const hasWater = await checkWaterBodies(departureCoords, {
+                        lat: nearestDeparture.airport.latitude,
+                        lng: nearestDeparture.airport.longitude
+                    });
+
+                    if (hasWater) {
+                        // Find alternative airport or reject route
+                        console.log("Bus route crosses water body - finding alternative");
+                        return;
+                    }
+                    // Add bus segment if no water crossing
+                    routeSegments.push({
+                        type: 'Bus',
+                        departure: startPoint,
+                        arrival: nearestDeparture.airport.city
+                    });
+                }
+                if (nearestDeparture && nearestDestination) {
+                    routeSegments.push({
+                        type: 'Flight',
+                        departure: nearestDeparture.airport.city,
+                        arrival: nearestDestination.airport.city,
+                        departureCoordinates: { latitude: nearestDeparture.airport.latitude, longitude: nearestDeparture.airport.longitude },
+                        arrivalCoordinates: { latitude: nearestDestination.airport.latitude, longitude: nearestDestination.airport.longitude }
+                    });
+                }
+    
+    
+                // If no more airports to try, show no routes message
                 if (!nearestDeparture || !nearestDestination) {
-                    console.log("No valid route found after trying all alternatives");
+                    console.log("No accessible airports found");
                     setRoutes([]);
                     break;
                 }
+                // If distance is less than 150km, create direct bus route
+                
+                if (directDistance <= 150) {
+                    setRoutes([{
+                        startPoint,
+                        endPoint,
+                        segments: [{
+                            type: 'Bus',
+                            departure: startPoint,
+                            arrival: endPoint,
+                            distance: directDistance
+                        }]
+                    }]);
+                    setLoading(false);
+                    return;
+                }
+                
+                // Similar check for destination bus segment
+            if (!destinationAirport && nearestDestination) {
+                const hasWater = await checkWaterBodies({
+                    lat: nearestDestination.airport.latitude,
+                    lng: nearestDestination.airport.longitude
+                }, destinationCoords);
 
-                // Check for water crossings
+                if (hasWater) {
+                    // Find alternative airport or reject route
+                    console.log("Bus route crosses water body - finding alternative");
+                    return;
+                }
+                // Add bus segment if no water crossing
+                routeSegments.push({
+                    type: 'Bus',
+                    departure: nearestDestination.airport.city,
+                    arrival: endPoint
+                });
+            }
+
+
+
                 const hasWaterToDeparture = await checkWaterBodies(departureCoords, {
                     lat: nearestDeparture.airport.latitude,
                     lng: nearestDeparture.airport.longitude
@@ -187,8 +276,8 @@ const RouteSearch = () => {
 
                 if (!hasWaterToDeparture && !hasWaterToDestination) {
                     validRoute = true;
+                    console.log('Valid route found:', nearestDeparture, nearestDestination);
                 } else {
-                    // Add current airports to tried list and continue searching
                     if (hasWaterToDeparture) {
                         triedDepartureAirports.push(nearestDeparture.airport);
                     }
@@ -198,10 +287,10 @@ const RouteSearch = () => {
                 }
             }
 
+            // Only create route if valid airports were found
             if (validRoute) {
-                // Create route segments with valid airports
                 const routeSegments = [];
-        
+
                 routeSegments.push({
                     type: 'Bus',
                     departure: startPoint,
@@ -225,14 +314,21 @@ const RouteSearch = () => {
                     endPoint,
                     segments: routeSegments
                 }]);
+            } else {
+                console.log("No accessible airports found" + nearestDeparture + nearestDestination);
+                setRoutes([]); // This will trigger the "No routes found" message
             }
 
         } catch (error) {
             console.error('Route search error:', error);
+            setRoutes([]);
         } finally {
             setLoading(false);
         }
-    };    const [departureSuggestions, setDepartureSuggestions] = useState([]);
+
+    };
+
+    const [departureSuggestions, setDepartureSuggestions] = useState([]);
     const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
     const getCitySuggestions = async (city, isSuggestionType) => {
@@ -279,6 +375,7 @@ const RouteSearch = () => {
                 const components = data.results[0].components;
                 // Check if point is in ocean or sea
                 if (components.body_of_water || components.ocean || components.sea) {
+                    console.log('Water body detected!', components);
                     return true; // Water body detected
                 }
             }
