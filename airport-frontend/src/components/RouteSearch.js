@@ -9,6 +9,7 @@ const RouteSearch = () => {
     const [endPoint, setEndPoint] = useState('');
     const [routes, setRoutes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [showResults, setShowResults] = useState(false);
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const toRad = (degree) => degree * Math.PI / 180;
@@ -187,7 +188,7 @@ const RouteSearch = () => {
                 // Log the nearest destination airport
                 console.log(`Nearest Destination Airport: ${nearestDestination ? nearestDestination.airport.city : 'None found'}`);
 
-                
+
                 const routeSegments = [];
                 // For bus segments, check for water bodies
                 if (!departureAirport && nearestDeparture) {
@@ -217,8 +218,8 @@ const RouteSearch = () => {
                         arrivalCoordinates: { latitude: nearestDestination.airport.latitude, longitude: nearestDestination.airport.longitude }
                     });
                 }
-    
-    
+
+
                 // If no more airports to try, show no routes message
                 if (!nearestDeparture || !nearestDestination) {
                     console.log("No accessible airports found");
@@ -226,7 +227,7 @@ const RouteSearch = () => {
                     break;
                 }
                 // If distance is less than 150km, create direct bus route
-                
+
                 if (directDistance <= 150) {
                     setRoutes([{
                         startPoint,
@@ -241,26 +242,26 @@ const RouteSearch = () => {
                     setLoading(false);
                     return;
                 }
-                
-                // Similar check for destination bus segment
-            if (!destinationAirport && nearestDestination) {
-                const hasWater = await checkWaterBodies({
-                    lat: nearestDestination.airport.latitude,
-                    lng: nearestDestination.airport.longitude
-                }, destinationCoords);
 
-                if (hasWater) {
-                    // Find alternative airport or reject route
-                    console.log("Bus route crosses water body - finding alternative");
-                    return;
+                // Similar check for destination bus segment
+                if (!destinationAirport && nearestDestination) {
+                    const hasWater = await checkWaterBodies({
+                        lat: nearestDestination.airport.latitude,
+                        lng: nearestDestination.airport.longitude
+                    }, destinationCoords);
+
+                    if (hasWater) {
+                        // Find alternative airport or reject route
+                        console.log("Bus route crosses water body - finding alternative");
+                        return;
+                    }
+                    // Add bus segment if no water crossing
+                    routeSegments.push({
+                        type: 'Bus',
+                        departure: nearestDestination.airport.city,
+                        arrival: endPoint
+                    });
                 }
-                // Add bus segment if no water crossing
-                routeSegments.push({
-                    type: 'Bus',
-                    departure: nearestDestination.airport.city,
-                    arrival: endPoint
-                });
-            }
 
 
 
@@ -314,6 +315,7 @@ const RouteSearch = () => {
                     endPoint,
                     segments: routeSegments
                 }]);
+                setShowResults(true);
             } else {
                 console.log("No accessible airports found" + nearestDeparture + nearestDestination);
                 setRoutes([]); // This will trigger the "No routes found" message
@@ -322,6 +324,7 @@ const RouteSearch = () => {
         } catch (error) {
             console.error('Route search error:', error);
             setRoutes([]);
+            setShowResults(false);
         } finally {
             setLoading(false);
         }
@@ -381,6 +384,9 @@ const RouteSearch = () => {
             }
         }
         return false; // No water bodies detected
+    };
+    const handleCloseResults = () => {
+        setShowResults(false);
     };
 
     return (
@@ -451,30 +457,35 @@ const RouteSearch = () => {
                     {loading ? 'Searching...' : 'Find Routes'}
                 </button>
             </div>
-
-            <div className="results-container">
-                {routes.map((route, index) => (
-                    <div key={index} className="route-card">
-                        <h3>Recommended Route</h3>
-                        <p>From: {route.startPoint}</p>
-                        <p>To: {route.endPoint}</p>
-                        <div className="segments">
-                            {route.segments.map((segment, segIndex) => (
-                                <div key={segIndex} className="segment">
-                                    <p>Step {segIndex + 1}: {segment.type}</p>
-                                    <p>From: {segment.departure}</p>
-                                    <p>To: {segment.arrival}</p>
-                                </div>
-                            ))}
+            {showResults && (
+                <div className="results-container">
+                    <div className="results-header">
+                        <h3>Route Details</h3>
+                        <button className="close-button" onClick={handleCloseResults}>×</button>
+                    </div>
+                    {routes.map((route, index) => (
+                        <div key={index} className="route-card">
+                            <h3>Recommended Route</h3>
+                            <p>From: {route.startPoint}</p>
+                            <p>To: {route.endPoint}</p>
+                            <div className="segments">
+                                {route.segments.map((segment, segIndex) => (
+                                    <div key={segIndex} className="segment">
+                                        <p>Step {segIndex + 1}: {segment.type}</p>
+                                        <p>From: {segment.departure}</p>
+                                        <p>To: {segment.arrival}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
-                {routes.length === 0 && !loading && (
-                    <div className="no-routes">
-                        <p>No routes found. Try different cities.</p>
-                    </div>
-                )}
-            </div>
+                    ))}
+                    {routes.length === 0 && !loading && (
+                        <div className="no-routes">
+                            <p>No routes found. Try different cities.</p>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
