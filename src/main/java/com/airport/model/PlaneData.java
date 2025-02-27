@@ -4,6 +4,7 @@ import java.util.List;
 
 public class PlaneData {
     private String departurePoint;
+    private String destinationPoint;
     private List<Family> families;
 
     // Getters and setters
@@ -13,6 +14,14 @@ public class PlaneData {
 
     public void setDeparturePoint(String departurePoint) {
         this.departurePoint = departurePoint;
+    }
+
+    public String getDestinationPoint() {
+        return destinationPoint;
+    }
+
+    public void setDestinationPoint(String destinationPoint) {
+        this.destinationPoint = destinationPoint;
     }
 
     public List<Family> getFamilies() {

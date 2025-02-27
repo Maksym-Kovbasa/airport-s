@@ -90,6 +90,7 @@ button:disabled {
 
 .results-container {
     position: fixed;
+    z-index: 1000;
     right: 20px;
     top: 20px;
     width: 300px;

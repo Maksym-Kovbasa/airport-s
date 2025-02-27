@@ -338,6 +338,7 @@ const RouteSearch = () => {
         try {
             const response = await fetch(
                 `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(city)}&key=${config.GEOCODING_API_KEY}&limit=5&language=en&pretty=1`
+                
             );
             const data = await response.json();
 

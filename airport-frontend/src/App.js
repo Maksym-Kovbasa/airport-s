@@ -38,10 +38,21 @@ function App() {
             });
 
             const data = await response.json();
-            const familiesWithUniqueIds = data.families.map((family, index) => ({
-                ...family,
-                id: `family-${planeId}-${family.name}-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`
-            }));
+            const familiesWithUniqueIds = data.families.map((family, index) => {
+                // Log the data to verify structure
+                console.log('Family data:', family);
+                console.log('Available destinations:', plane.availableDestinations);
+
+                const randomCity = plane.availableDestinations && plane.availableDestinations.length > 0
+                    ? plane.availableDestinations[Math.floor(Math.random() * plane.availableDestinations.length)]
+                    : plane.destinationAirport.city;
+
+                return {
+                    ...family,
+                    id: `family-${planeId}-${family.name}-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+                    travelTo: randomCity
+                };
+            });
 
             setPlanes(prevPlanes =>
                 prevPlanes.map(plane => {
@@ -70,20 +81,33 @@ function App() {
     const createPlanes = async () => {
         try {
             const response = await airportApi.getAllAirports();
+            const nearbyCitiesResponse = await fetch('http://localhost:8080/api/airports/with-nearby-cities');
             const airports = response.data;
-
+            const nearbyCities = await nearbyCitiesResponse.json();
             const newPlanes = Array.from({ length: numberOfPlanes }, (_, index) => {
-                const randomAirportIndex = Math.floor(Math.random() * airports.length);
+                const departureIndex = Math.floor(Math.random() * airports.length);
+                let destinationIndex;
+
+                // Keep generating new index until we get a different airport
+                do {
+                    destinationIndex = Math.floor(Math.random() * airports.length);
+                } while (destinationIndex === departureIndex);
+
+                const departureAirport = airports[departureIndex];
+                const destinationAirport = airports[destinationIndex];
+
+                const nearbyCitiesList = nearbyCities[destinationAirport.name] || [];
                 return {
                     id: index + 1,
                     families: [],
-                    departureAirport: airports[randomAirportIndex],
-                    destination: airports[randomAirportIndex].city
+                    departureAirport: departureAirport,
+                    destinationAirport: destinationAirport,
+                    destination: destinationAirport.city,
+                    availableDestinations: nearbyCitiesList
                 };
             });
 
             setPlanes(newPlanes);
-
         } catch (error) {
             console.error('Error creating planes:', error);
         }
@@ -107,11 +131,13 @@ function App() {
                 body: JSON.stringify({
                     planes: planes.map(plane => ({
                         departurePoint: plane.departureAirport.name,
+                        destinationPoint: plane.destinationAirport.city,
                         families: plane.families.map(family => ({
                             name: family.name,
                             count: family.count,
                             travelTo: family.travelTo || plane.destination,
-                            fromCity: plane.departureAirport.name
+                            fromCity: plane.departureAirport.name,
+                            planeId: plane.id
                         }))
                     }))
                 }),
@@ -179,9 +205,9 @@ function App() {
             </header>
             <main className="App-main">
                 <div className="app">
-                   
-                        <RouteSearch />
-                   
+
+                    <RouteSearch />
+
                 </div>
                 {showDashboard ? (<Dashboard />) : (<>
                     <div className="control-panel">
@@ -213,7 +239,9 @@ function App() {
                                         <h3>Plane #{plane.id} - {plane.departureAirport.name}</h3>
                                         <div className="plane-destination">
                                             <label>Departure Point:</label>
-                                            <span className="departure-point">{plane.destination}</span>
+                                            <span className="departure-point">{plane.departureAirport.city}</span>
+                                            <label>Destination Point:</label>
+                                            <span className="destination-point">{plane.destinationAirport.city}</span>
                                         </div>
                                         <div className="plane-buttons">
                                             <button className="fill-plane-button"
@@ -239,6 +267,7 @@ function App() {
                                                 <table className="families-table">
                                                     <tbody>
                                                         {plane.families.map((family, index) => {
+                                                            console.log('Rendering family:', family); // Add this log
                                                             const uniqueKey = `family-${plane.id}-${family.name}-${index}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
                                                             return (
                                                                 <tr key={uniqueKey}>

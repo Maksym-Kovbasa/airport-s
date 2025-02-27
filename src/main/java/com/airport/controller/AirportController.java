@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/airports")
@@ -41,4 +42,11 @@ public class AirportController {
         return ResponseEntity.ok().build();
     }
 
+
+    @GetMapping("/with-nearby-cities")
+    public ResponseEntity<Map<String, List<String>>> getAirportsWithNearbyCities() {
+        Map<String, List<String>> airportsWithCities = airportService.getAirportsWithNearbyCities(100);
+        return ResponseEntity.ok(airportsWithCities);
+    }
 }
+
