@@ -108,6 +108,11 @@ const AirportMap = ({ airports }) => {
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
     });
+    const getRandomAirport = (airports) => {
+        const randomIndex = Math.floor(Math.random() * airports.length);
+        return airports[randomIndex];
+    };
+
     const validAirports = airports.filter(airport =>
         airport?.latitude &&
         airport?.longitude &&
@@ -122,7 +127,6 @@ const AirportMap = ({ airports }) => {
             style={{ height: '500px', width: '100%', borderRadius: '10px' }}
         >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
             {validAirports.map(airport => (
                 <React.Fragment key={airport.id}>
                     <MovingPlane
@@ -132,21 +136,30 @@ const AirportMap = ({ airports }) => {
                     />
                 </React.Fragment>
             ))}
-            {validAirports.map(airport => (
-                <Marker
-                    key={airport.id}
-                    position={[Number(airport.latitude), Number(airport.longitude)]}
-                >
-                    <Popup>
-                        <div className="airport-popup">
-                            <h3>{airport.name}</h3>
-                            <p><strong>Code:</strong> {airport.code}</p>
-                            <p><strong>Location:</strong> {airport.city}, {airport.country}</p>
-                            <p><strong>Position:</strong> {Number(airport.latitude).toFixed(4)}°N, {Number(airport.longitude).toFixed(4)}°E</p>
-                        </div>
-                    </Popup>
-                </Marker>
-            ))}
+            {validAirports.map(airport => {
+                const randomDestination = getRandomAirport(validAirports);
+                return (
+                    <React.Fragment key={airport.id}>
+                        <MovingPlane
+                            from={[Number(airport.latitude), Number(airport.longitude)]}
+                            to={[Number(randomDestination.latitude), Number(randomDestination.longitude)]}
+                            name={airport.name}
+                        />
+                        <Marker
+                            position={[Number(airport.latitude), Number(airport.longitude)]}
+                        >
+                            <Popup>
+                                <div className="airport-popup">
+                                    <h3>{airport.name}</h3>
+                                    <p><strong>Code:</strong> {airport.code}</p>
+                                    <p><strong>Location:</strong> {airport.city}, {airport.country}</p>
+                                    <p><strong>Position:</strong> {Number(airport.latitude).toFixed(4)}°N, {Number(airport.longitude).toFixed(4)}°E</p>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    </React.Fragment>
+                );
+            })}
             <Marker position={LVIV} icon={redIcon}>
                 <Popup>
                     <div className="airport-popup">
