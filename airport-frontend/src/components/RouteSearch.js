@@ -165,6 +165,8 @@ const RouteSearch = () => {
                         distance: directDistance
                     }]
                 }]);
+                console.log('Direct bus route found');
+                setShowResults(true);
                 setLoading(false);
                 return;
             }
