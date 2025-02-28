@@ -82,7 +82,7 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
                 <input
                     type="text"
                     name="name"
-                    placeholder="Airport Name"
+                    placeholder="Airplane Name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -90,7 +90,7 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
                 <input
                     type="text"
                     name="code"
-                    placeholder="Airport Code"
+                    placeholder="Airport Code (name)"
                     value={formData.code}
                     onChange={handleChange}
                     required

@@ -50,7 +50,7 @@ public class AirportService {
         airportRepository.delete(airport);
     }
 
-    private final String OPENCAGE_API_KEY = "eb60c62fe08b4c738894f5d0d6585a8e"; // Replace with your real API key
+    private final String OPENCAGE_API_KEY = "Your_Api_Key"; // Replace with your real API key
     private final RestTemplate restTemplate = new RestTemplate();
     
     public Map<String, List<String>> getAirportsWithNearbyCities(int radiusKm) {

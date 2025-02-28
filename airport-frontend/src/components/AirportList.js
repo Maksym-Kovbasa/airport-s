@@ -69,8 +69,8 @@ const AirportList = () => {
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Code</th>
+                                <th>Airplane Name</th>
+                                <th>Airport Code (name)</th>
                                 <th>City</th>
                                 <th>Country</th>
                                 <th>Actions</th>
