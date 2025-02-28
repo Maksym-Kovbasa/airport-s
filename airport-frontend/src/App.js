@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import HistoryModal from './components/HistoryModal';
 import AirplaneAnimation from "./components/AirplaneAnimation";
@@ -7,9 +7,9 @@ import Dashboard from './components/Dashboard';
 import { airportApi, historyApi } from './services/api';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import RouteSearch from './components/RouteSearch';
-
-
-
+import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import sunsetBackground from './components/style/sunset-reduced.jpg';
 
 function App() {
     const [planes, setPlanes] = useState([]);
@@ -22,6 +22,80 @@ function App() {
     const [showBusAnimation, setShowBusAnimation] = useState(false);
     const [isAutoFilled, setIsAutoFilled] = useState(false);
     const [showDashboard, setShowDashboard] = useState(false);
+
+    const manager = new THREE.LoadingManager();
+    const loader = new OBJLoader(manager);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    useEffect(() => {
+        const scene = new THREE.Scene();
+
+        // Create background texture
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(sunsetBackground);
+        scene.background = texture;
+
+        const aspect = window.innerWidth / window.innerHeight;
+        const camera = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 1, 1000);
+        camera.position.set(10, 0, 0);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('3d-container').appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(ambientLight, directionalLight);
+
+        // Create brown material
+        const brownMaterial = new THREE.MeshPhongMaterial({
+            color: 0x948b84,  // Saddle Brown color
+            shininess: 30
+        });
+
+        const loader = new OBJLoader();
+        loader.load('https://assets.codepen.io/557388/1405+Plane_1.obj',
+            (object) => {
+                object.scale.set(0.1, 0.1, 0.1);
+                object.position.set(-3, -4.85, 0);
+                object.rotation.set(0, Math.PI / 2, 0); // Changed rotation to face right
+
+                // Apply brown material to all mesh children
+                object.traverse((child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.material = brownMaterial;
+                    }
+                });
+
+                scene.add(object);
+                renderer.render(scene, camera);
+            }
+        );
+
+        return () => {
+            renderer.dispose();
+        };
+    }, []);
+    loader.load('https://assets.codepen.io/557388/1405+Plane_1.obj',
+        (object) => {
+            // Handle successful load
+            scene.add(object);
+        },
+        (xhr) => {
+            // Handle progress
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        (error) => {
+            // Handle errors
+            console.log('An error occurred loading the model');
+        }
+    );
+
 
     const autoFillPlane = async (planeId) => {
         setLoadingStates(prev => ({ ...prev, [planeId]: true }));
@@ -194,6 +268,11 @@ function App() {
             });
         }
     };
+    const resetPlanes = () => {
+        setPlanes([]);
+        setNumberOfPlanes(1);
+        setBusResults(null);
+    };
 
     return (
         <div className="App">
@@ -224,6 +303,9 @@ function App() {
                                     />
                                 </label>
                                 <button className="CreatePlane" onClick={createPlanes}>Create Planes</button>
+                                {planes.length > 0 && (
+                                    <button className="ResetPlane" onClick={resetPlanes}>Reset</button>
+                                )}
                             </div>
                             <div className="history-section">
                                 <button className="history-button" onClick={() => setShowHistory(true)}>
@@ -231,7 +313,7 @@ function App() {
                                 </button>
                             </div>
                         </div>
-                        <div className="planes-container">
+                        <div className={`planes-container ${planes.length > 0 ? 'with-margin' : ''}`}>
                             {planes.map((plane) => {
                                 const totalPassengers = plane.families.reduce((acc, family) => acc + family.count, 0);
                                 return (
@@ -333,6 +415,10 @@ function App() {
                 </>
                 )}
             </main>
+            <div id="3d-container" style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }} />
+            <footer className="App-footer">
+                <p>© 2025 Airport Management System</p>
+            </footer>
         </div>
     );
 }

@@ -2,12 +2,24 @@ import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import customMarkerIcon from '../components/style/marker-icon-2x-black.png';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
+
+
+const vintageIcon = new L.Icon({
+    iconUrl: customMarkerIcon,
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
 });
 
 const MovingPlane = ({ from, to, name }) => {
@@ -126,7 +138,8 @@ const AirportMap = ({ airports }) => {
             zoom={3}
             style={{ height: '500px', width: '100%', borderRadius: '10px' }}
         >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
             {validAirports.map(airport => (
                 <React.Fragment key={airport.id}>
                     <MovingPlane
@@ -146,7 +159,8 @@ const AirportMap = ({ airports }) => {
                             name={airport.name}
                         />
                         <Marker
-                            position={[Number(airport.latitude), Number(airport.longitude)]}
+                            position={[Number(airport.latitude), Number(airport.longitude)]} 
+                            icon={vintageIcon}
                         >
                             <Popup>
                                 <div className="airport-popup">

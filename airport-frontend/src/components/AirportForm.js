@@ -78,7 +78,7 @@ const AirportForm = ({ onAirportAdded, editingAirport, onUpdate }) => {
     return (
         <div className="form-container">
             <h3>{editingAirport ? 'Edit Airport' : 'Add New Airport'}</h3>
-            <form onSubmit={handleSubmit}>
+            <form className="write" onSubmit={handleSubmit}>
                 <input
                     type="text"
                     name="name"

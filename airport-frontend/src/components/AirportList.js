@@ -66,8 +66,8 @@ const AirportList = () => {
                 <div className="loading-skeleton">Loading...</div>
             ) : (
                 <div className="table-container">
-                    <table>
-                        <thead>
+                    <table className='airport-table'>
+                        <thead className='airport-table-head'>
                             <tr>
                                 <th>Airplane Name</th>
                                 <th>Airport Code (name)</th>
