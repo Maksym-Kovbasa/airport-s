@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="afdf6fa8-1913-4356-94c4-b53d76e339d0" name="Changes" comment="" />
+    <list default="true" id="afdf6fa8-1913-4356-94c4-b53d76e339d0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,44 +15,53 @@
   <component name="ComposerSettings">
     <execution />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$MAVEN_REPOSITORY$/org/apache/tomcat/embed/tomcat-embed-core/9.0.63/tomcat-embed-core-9.0.63-sources.jar!/org/apache/tomcat/util/http/parser/Authorization.java" root0="SKIP_INSPECTION" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="HttpClientEndpointsTabState">
+    <option name="cachedRequestData" value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;b4622a2d069131c2a47237d84701e7f8c6265ebd&quot; value=&quot;###&amp;#10;GET http://localhost:8080/api/airports&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2tG6BSfbSudauKwnkueczS7TX87" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.airport-simulation [clean].executor": "Run",
-    "Maven.airport-simulation [compile].executor": "Run",
-    "Maven.airport-simulation [deploy].executor": "Run",
-    "Maven.airport-simulation [install].executor": "Run",
-    "Maven.airport-simulation [org.apache.maven.plugins:maven-install-plugin:2.5.2:install].executor": "Run",
-    "Maven.airport-simulation [org.springframework.boot:spring-boot-maven-plugin:2.7.0:run].executor": "Run",
-    "Maven.airport-simulation [site].executor": "Run",
-    "Maven.airport-simulation [validate].executor": "Run",
-    "Maven.airport-simulation [verify].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Університет/Розробка комп'ютерних ігор/te",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
-    "ts.external.directory.path": "D:\\Games\\IntelliJ IDEA 2024.3.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.airport-simulation [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [deploy].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [org.apache.maven.plugins:maven-install-plugin:2.5.2:install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [org.springframework.boot:spring-boot-maven-plugin:2.7.0:run].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [site].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.airport-simulation [verify].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/practic/airport-simulation&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Games\\IntelliJ IDEA 2024.3.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -60,6 +71,9 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="afdf6fa8-1913-4356-94c4-b53d76e339d0" name="Changes" comment="" />
@@ -68,6 +82,8 @@
       <option name="presentableId" value="Default" />
       <updated>1739965943698</updated>
       <workItem from="1739965947501" duration="13773000" />
+      <workItem from="1741102473817" duration="464000" />
+      <workItem from="1741102962126" duration="74000" />
     </task>
     <servers />
   </component>
